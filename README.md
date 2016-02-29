@@ -1,7 +1,8 @@
 ![driller icon](url-driller.png)
 
-# url-driller
+[![Circle CI](https://circleci.com/gh/pubnative/url-driller/tree/master.svg?style=shield)](https://circleci.com/gh/pubnative/url-driller/tree/master)
 
+# url-driller
 
 
 This repository contains a tool to navigate deep into an URL redirection and open it in background.
@@ -12,7 +13,7 @@ This repository contains a tool to navigate deep into an URL redirection and ope
 
 Add the following line to your build.gradle file
 
-`compile "net.pubnative:url-driller:1.0.0"`
+`compile "net.pubnative:url_driller:1.0.0"`
 
 ###Manual
 
