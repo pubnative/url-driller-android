@@ -30,22 +30,22 @@ public class URLDriller {
     protected Listener mListener;
     protected Handler  mHandler;
 
-    public URLDriller() {
-
+    /**
+     * This method will set up a listener in this drill
+     * @param listener valid Listener or null
+     */
+    public void setListener(Listener listener) {
+        mListener = listener;
     }
 
     /**
      * This method will open the URL in background following redirections
      *
+     * @param context  valid Context
      * @param url      valid URL
-     * @param listener valid URLDriller.Listener for callbacks
      */
-    public void drill(Context context, final String url, Listener listener) {
+    public void drill(Context context, final String url) {
 
-        if (listener == null) {
-            Log.w(TAG, "URLDrill: listener not specified, drilling without callbacks");
-        }
-        mListener = listener;
         if (TextUtils.isEmpty(url)) {
             invokeFail(url, new IllegalArgumentException("URLDrill error: url is null or empty"));
         } else if (context == null) {

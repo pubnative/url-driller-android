@@ -35,8 +35,8 @@ public class URLDrillerTest {
         URLDriller driller = spy(URLDriller.class);
         URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
 
-        driller.mListener = drillerListener;
         driller.mHandler = new Handler();
+        driller.setListener(drillerListener);
         driller.invokeRedirect("");
 
         verify(drillerListener, times(1)).onURLDrillerRedirect(anyString());
@@ -48,8 +48,8 @@ public class URLDrillerTest {
         URLDriller driller = spy(URLDriller.class);
         URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
 
-        driller.mListener = drillerListener;
         driller.mHandler = new Handler();
+        driller.setListener(drillerListener);
         driller.invokeFinish("");
 
         verify(drillerListener, times(1)).onURLDrillerFinish(anyString());
@@ -61,8 +61,8 @@ public class URLDrillerTest {
         URLDriller driller = spy(URLDriller.class);
         URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
 
-        driller.mListener = drillerListener;
         driller.mHandler = new Handler();
+        driller.setListener(drillerListener);
         driller.invokeFail("", mock(Exception.class));
 
         verify(drillerListener, times(1)).onURLDrillerFail(anyString(), any(Exception.class));
@@ -72,7 +72,6 @@ public class URLDrillerTest {
     public void invokeMethodsNotFailingWithoutListener() {
 
         URLDriller driller = spy(URLDriller.class);
-
 
         driller.mHandler = new Handler();
 
@@ -87,8 +86,8 @@ public class URLDrillerTest {
         URLDriller driller = spy(URLDriller.class);
         URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
 
-        driller.mListener = drillerListener;
         driller.mHandler = new Handler();
+        driller.setListener(drillerListener);
         driller.invokeStart("");
 
         verify(drillerListener, times(1)).onURLDrillerStart(anyString());
@@ -101,8 +100,8 @@ public class URLDrillerTest {
         URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
 
         driller.mHandler = new Handler();
-        driller.mListener = drillerListener;
-        driller.drill(RuntimeEnvironment.application.getApplicationContext(), "", drillerListener);
+        driller.setListener(drillerListener);
+        driller.drill(RuntimeEnvironment.application.getApplicationContext(), "");
 
         verify(drillerListener, times(1)).onURLDrillerFail(anyString(), any(IllegalArgumentException.class));
     }
@@ -114,8 +113,8 @@ public class URLDrillerTest {
         URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
 
         driller.mHandler = new Handler();
-        driller.mListener = drillerListener;
-        driller.drill(RuntimeEnvironment.application.getApplicationContext(), null, drillerListener);
+        driller.setListener(drillerListener);
+        driller.drill(RuntimeEnvironment.application.getApplicationContext(), null);
 
         verify(drillerListener, times(1)).onURLDrillerFail(anyString(), any(IllegalArgumentException.class));
     }
@@ -127,8 +126,8 @@ public class URLDrillerTest {
         URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
 
         driller.mHandler = new Handler();
-        driller.mListener = drillerListener;
-        driller.drill(null, "http://www.google.es", drillerListener);
+        driller.setListener(drillerListener);
+        driller.drill(null, "http://www.google.es");
 
         verify(drillerListener, times(1)).onURLDrillerFail(anyString(), any(IllegalArgumentException.class));
     }
