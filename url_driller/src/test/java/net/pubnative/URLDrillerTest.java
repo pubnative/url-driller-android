@@ -7,7 +7,6 @@ import net.pubnative.url_driller.BuildConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,7 +68,7 @@ public class URLDrillerTest {
     }
 
     @Test
-    public void invokeMethodsNotFailingWithoutListener() {
+    public void invokeCallbacksWithoutListener() {
 
         URLDriller driller = spy(URLDriller.class);
 
@@ -101,7 +100,7 @@ public class URLDrillerTest {
 
         driller.mHandler = new Handler();
         driller.setListener(drillerListener);
-        driller.drill(RuntimeEnvironment.application.getApplicationContext(), "");
+        driller.drill("");
 
         verify(drillerListener, times(1)).onURLDrillerFail(anyString(), any(IllegalArgumentException.class));
     }
@@ -114,20 +113,7 @@ public class URLDrillerTest {
 
         driller.mHandler = new Handler();
         driller.setListener(drillerListener);
-        driller.drill(RuntimeEnvironment.application.getApplicationContext(), null);
-
-        verify(drillerListener, times(1)).onURLDrillerFail(anyString(), any(IllegalArgumentException.class));
-    }
-
-    @Test
-    public void failOnNullContext(){
-
-        URLDriller driller = spy(URLDriller.class);
-        URLDriller.Listener drillerListener = spy(URLDriller.Listener.class);
-
-        driller.mHandler = new Handler();
-        driller.setListener(drillerListener);
-        driller.drill(null, "http://www.google.es");
+        driller.drill(null);
 
         verify(drillerListener, times(1)).onURLDrillerFail(anyString(), any(IllegalArgumentException.class));
     }
