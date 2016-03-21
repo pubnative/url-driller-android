@@ -1,6 +1,7 @@
 package net.pubnative;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -72,7 +73,7 @@ public class URLDriller {
         if (TextUtils.isEmpty(url)) {
             invokeFail(url, new IllegalArgumentException("URLDrill error: url is null or empty"));
         } else {
-            mHandler = new Handler();
+            mHandler = new Handler(Looper.getMainLooper());
             new Thread(new Runnable() {
 
                 @Override
@@ -171,6 +172,7 @@ public class URLDriller {
                 if (mListener != null) {
                     mListener.onURLDrillerFinish(url);
                 }
+                mListener = null;
             }
         });
     }
@@ -186,6 +188,7 @@ public class URLDriller {
                 if (mListener != null) {
                     mListener.onURLDrillerFail(url, exception);
                 }
+                mListener = null;
             }
         });
     }
