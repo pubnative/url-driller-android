@@ -111,6 +111,11 @@ public class URLDriller {
                 case HttpURLConnection.HTTP_SEE_OTHER: {
                     String newUrl = conn.getHeaderField("Location");
                     Log.v(TAG, " - Redirecting: " + newUrl);
+                    if(newUrl.startsWith("/")) {
+                        String protocol = urlObj.getProtocol();
+                        String host = urlObj.getHost();
+                        newUrl = protocol + "://" + host + newUrl;
+                    }
                     invokeRedirect(newUrl);
                     doDrill(newUrl);
                 }
