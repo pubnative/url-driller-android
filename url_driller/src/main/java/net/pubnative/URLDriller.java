@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 
 public class URLDriller {
 
@@ -111,6 +112,9 @@ public class URLDriller {
                 case HttpURLConnection.HTTP_SEE_OTHER: {
                     String newUrl = conn.getHeaderField("Location");
                     Log.v(TAG, " - Redirecting: " + newUrl);
+                    if(newUrl.startsWith("/")) {
+                        newUrl = URLDecoder.decode(newUrl.replaceFirst("\\/aff_r\\?(.*)&url=", ""));
+                    }
                     invokeRedirect(newUrl);
                     doDrill(newUrl);
                 }
