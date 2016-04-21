@@ -10,7 +10,9 @@ import java.net.URL;
 
 public class URLDriller {
 
-    private static final String TAG = URLDriller.class.getSimpleName();
+    private static final String TAG        = URLDriller.class.getSimpleName();
+
+    private              String mUserAgent = null;
 
     //==============================================================================================
     // LISTENER
@@ -64,6 +66,16 @@ public class URLDriller {
     }
 
     /**
+     * This method will set user agent in request
+     *
+     * @param userAgent User-Agent string
+     */
+    public void setUserAgent(String userAgent) {
+
+        mUserAgent = userAgent;
+    }
+
+    /**
      * This method will open the URL in background following redirections
      *
      * @param url valid url to drill
@@ -95,6 +107,9 @@ public class URLDriller {
         try {
             URL urlObj = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
+            if(mUserAgent != null) {
+                conn.setRequestProperty("User-Agent", mUserAgent);
+            }
             conn.setInstanceFollowRedirects(false);
             conn.connect();
             conn.setReadTimeout(5000);
