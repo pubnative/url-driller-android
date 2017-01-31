@@ -10,9 +10,10 @@ import java.net.URL;
 
 public class URLDriller {
 
-    private static final String TAG        = URLDriller.class.getSimpleName();
+    private static final String TAG = URLDriller.class.getSimpleName();
 
-    private              String mUserAgent = null;
+    private String mUserAgent = null;
+    private int mDrillSize = 15;
 
     //==============================================================================================
     // LISTENER
@@ -50,7 +51,7 @@ public class URLDriller {
     }
 
     protected Listener mListener;
-    protected Handler  mHandler;
+    protected Handler mHandler;
     //==============================================================================================
     // PUBLIC
     //==============================================================================================
@@ -76,6 +77,15 @@ public class URLDriller {
     }
 
     /**
+     * Set the steps for URL drilling.
+     *
+     * @param drillSize how deep we must drill root URL
+     */
+    public void setDrillSize(int drillSize) {
+        mDrillSize = drillSize;
+    }
+
+    /**
      * This method will open the URL in background following redirections
      *
      * @param url valid url to drill
@@ -92,7 +102,7 @@ public class URLDriller {
                 public void run() {
 
                     invokeStart(url);
-                    doDrill(url);
+                    doDrill(url, 0);
                 }
             }).start();
         }
@@ -101,13 +111,21 @@ public class URLDriller {
     //==============================================================================================
     // PRIVATE
     //==============================================================================================
-    protected void doDrill(String url) {
+
+    /**
+     * Method do request for the URL and depends from the response status return last used URL
+     * or made new request with new URL.
+     *
+     * @param url     URL for request
+     * @param counter number of request from start.
+     */
+    protected void doDrill(String url, int counter) {
 
         Log.v(TAG, "doDrill: " + url);
         try {
             URL urlObj = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
-            if(mUserAgent != null) {
+            if (mUserAgent != null) {
                 conn.setRequestProperty("User-Agent", mUserAgent);
             }
             conn.setInstanceFollowRedirects(false);
@@ -126,13 +144,20 @@ public class URLDriller {
                 case HttpURLConnection.HTTP_SEE_OTHER: {
                     String newUrl = conn.getHeaderField("Location");
                     Log.v(TAG, " - Redirecting: " + newUrl);
-                    if(newUrl.startsWith("/")) {
+                    if (newUrl.startsWith("/")) {
                         String protocol = urlObj.getProtocol();
                         String host = urlObj.getHost();
                         newUrl = protocol + "://" + host + newUrl;
                     }
                     invokeRedirect(newUrl);
-                    doDrill(newUrl);
+                    conn.disconnect();
+                    if (counter < mDrillSize) {
+                        doDrill(newUrl, counter + 1);
+                    } else {
+                        Exception deepException = new Exception("Drilling error: Reached drill limit");
+                        Log.e(TAG, deepException.toString());
+                        invokeFail(url, deepException);
+                    }
                 }
                 break;
                 default: {
