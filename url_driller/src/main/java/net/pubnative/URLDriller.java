@@ -10,10 +10,10 @@ import java.net.URL;
 
 public class URLDriller {
 
-    private static final String TAG        = URLDriller.class.getSimpleName();
+    private static final String TAG = URLDriller.class.getSimpleName();
 
-    private              String mUserAgent = null;
-    private              int    mDrillSize = 15;
+    private String mUserAgent = null;
+    private int mDrillSize = 15;
 
     //==============================================================================================
     // LISTENER
@@ -51,7 +51,7 @@ public class URLDriller {
     }
 
     protected Listener mListener;
-    protected Handler  mHandler;
+    protected Handler mHandler;
     //==============================================================================================
     // PUBLIC
     //==============================================================================================
@@ -78,6 +78,7 @@ public class URLDriller {
 
     /**
      * Set the steps for URL drilling.
+     *
      * @param drillSize how deep we must drill root URL
      */
     public void setDrillSize(int drillSize) {
@@ -114,7 +115,8 @@ public class URLDriller {
     /**
      * Method do request for the URL and depends from the response status return last used URL
      * or made new request with new URL.
-     * @param url URL for request
+     *
+     * @param url     URL for request
      * @param counter number of request from start.
      */
     protected void doDrill(String url, int counter) {
@@ -123,7 +125,7 @@ public class URLDriller {
         try {
             URL urlObj = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
-            if(mUserAgent != null) {
+            if (mUserAgent != null) {
                 conn.setRequestProperty("User-Agent", mUserAgent);
             }
             conn.setInstanceFollowRedirects(false);
@@ -142,7 +144,7 @@ public class URLDriller {
                 case HttpURLConnection.HTTP_SEE_OTHER: {
                     String newUrl = conn.getHeaderField("Location");
                     Log.v(TAG, " - Redirecting: " + newUrl);
-                    if(newUrl.startsWith("/")) {
+                    if (newUrl.startsWith("/")) {
                         String protocol = urlObj.getProtocol();
                         String host = urlObj.getHost();
                         newUrl = protocol + "://" + host + newUrl;
@@ -151,163 +153,11 @@ public class URLDriller {
                     conn.disconnect();
                     if (counter < mDrillSize) {
                         doDrill(newUrl, counter + 1);
+                    } else {
+                        Exception deepException = new Exception("Drilling error: Reached drill limit");
+                        Log.e(TAG, deepException.toString());
+                        invokeFail(url, deepException);
                     }
-                }
-                break;
-                default: {
-                    Exception statusException = new Exception("Drilling error: Invalid URL, Status: " + status);
-                    Log.e(TAG, statusException.toString());
-                    invokeFail(url, statusException);
-                }
-                break;
-            }
-        } catch (Exception exception) {
-            Log.e(TAG, "Drilling error: " + exception);
-            invokeFail(url, exception);
-        }
-    }
-    //==============================================================================================
-    // Listener helpers
-    //==============================================================================================
-
-    protected void invokeStart(final String url) {
-
-        Log.v(TAG, "invokeStart");
-        mHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-
-                if (mListener != null) {
-                    mListener.onURLDrillerStart(url);
-                }
-            }
-        });
-    }
-
-    protected void invokeRedirect(final String url) {
-
-        Log.v(TAG, "invokeRedirect");
-        mHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-
-                if (mListener != null) {
-                    mListener.onURLDrillerRedirect(url);
-                }
-            }
-        });
-    }
-
-    protected void invokeFinish(final String url) {
-
-        Log.v(TAG, "invokeFinish");
-        mHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-
-                if (mListener != null) {
-                    mListener.onURLDrillerFinish(url);
-                }
-                mListener = null;
-            }
-        });
-    }
-
-    protected void invokeFail(final String url, final Exception exception) {
-
-        Log.v(TAG, "invokeFail: " + exception);
-        mHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-
-                if (mListener != null) {
-                    mListener.onURLDrillerFail(url, exception);
-                }
-                mListener = null;
-            }
-        });
-    }
-}
-
-     * @param listener valid Listener or null
-     */
-    public void setListener(Listener listener) {
-
-        mListener = listener;
-    }
-
-    /**
-     * This method will set user agent in request
-     *
-     * @param userAgent User-Agent string
-     */
-    public void setUserAgent(String userAgent) {
-
-        mUserAgent = userAgent;
-    }
-
-    /**
-     * This method will open the URL in background following redirections
-     *
-     * @param url valid url to drill
-     */
-    public void drill(final String url) {
-
-        if (TextUtils.isEmpty(url)) {
-            invokeFail(url, new IllegalArgumentException("URLDrill error: url is null or empty"));
-        } else {
-            mHandler = new Handler(Looper.getMainLooper());
-            new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    invokeStart(url);
-                    doDrill(url);
-                }
-            }).start();
-        }
-    }
-
-    //==============================================================================================
-    // PRIVATE
-    //==============================================================================================
-    protected void doDrill(String url) {
-
-        Log.v(TAG, "doDrill: " + url);
-        try {
-            URL urlObj = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
-            if(mUserAgent != null) {
-                conn.setRequestProperty("User-Agent", mUserAgent);
-            }
-            conn.setInstanceFollowRedirects(false);
-            conn.connect();
-            conn.setReadTimeout(5000);
-            int status = conn.getResponseCode();
-            Log.v(TAG, " - Status: " + status);
-            switch (status) {
-                case HttpURLConnection.HTTP_OK: {
-                    Log.v(TAG, " - Done: " + url);
-                    invokeFinish(url);
-                }
-                break;
-                case HttpURLConnection.HTTP_MOVED_TEMP:
-                case HttpURLConnection.HTTP_MOVED_PERM:
-                case HttpURLConnection.HTTP_SEE_OTHER: {
-                    String newUrl = conn.getHeaderField("Location");
-                    Log.v(TAG, " - Redirecting: " + newUrl);
-                    if(newUrl.startsWith("/")) {
-                        String protocol = urlObj.getProtocol();
-                        String host = urlObj.getHost();
-                        newUrl = protocol + "://" + host + newUrl;
-                    }
-                    invokeRedirect(newUrl);
-                    doDrill(newUrl);
                 }
                 break;
                 default: {
