@@ -231,7 +231,7 @@ public class URLDriller {
             public void run() {
 
                 if (mListener != null) {
-                    mListener.onURLDrillerFail(url, exception);
+                    mListener.onURLDrillerFail(url == null ? "" : url, exception);
                 }
                 mListener = null;
             }
