@@ -13,7 +13,7 @@ public class URLDriller {
     private static final String TAG = URLDriller.class.getSimpleName();
 
     private String mUserAgent = null;
-    private int mDrillSize = 15;
+    private int mDrillSize = 0;
 
     //==============================================================================================
     // LISTENER
@@ -102,7 +102,7 @@ public class URLDriller {
                 public void run() {
 
                     invokeStart(url);
-                    doDrill(url, 0);
+                    doDrill(url);
                 }
             }).start();
         }
@@ -111,6 +111,16 @@ public class URLDriller {
     //==============================================================================================
     // PRIVATE
     //==============================================================================================
+
+    /**
+     * Method do request for the URL and depends from the response status return last used URL
+     * or made new request with new URL.
+     *
+     * @param url     URL for request
+     */
+    protected void doDrill(String url) {
+        doDrill(url, 0);
+    }
 
     /**
      * Method do request for the URL and depends from the response status return last used URL
@@ -151,7 +161,9 @@ public class URLDriller {
                     }
                     invokeRedirect(newUrl);
                     conn.disconnect();
-                    if (counter < mDrillSize) {
+                    if (mDrillSize == 0) {
+                        doDrill(newUrl);
+                    } else if (mDrillSize > 0 && counter < mDrillSize) {
                         doDrill(newUrl, counter + 1);
                     } else {
                         invokeFinish(url);
@@ -170,6 +182,8 @@ public class URLDriller {
             invokeFail(url, exception);
         }
     }
+
+
     //==============================================================================================
     // Listener helpers
     //==============================================================================================
