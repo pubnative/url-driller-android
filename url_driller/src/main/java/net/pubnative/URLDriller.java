@@ -154,9 +154,7 @@ public class URLDriller {
                     if (counter < mDrillSize) {
                         doDrill(newUrl, counter + 1);
                     } else {
-                        Exception deepException = new Exception("Drilling error: Reached drill limit");
-                        Log.e(TAG, deepException.toString());
-                        invokeFail(url, deepException);
+                        invokeFinish(url);
                     }
                 }
                 break;
