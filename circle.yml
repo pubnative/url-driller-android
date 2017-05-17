@@ -1,3 +1,18 @@
-machine:
-  timezone:
-    Europe/Berlin
+version: 2
+jobs:
+  build:
+    docker:
+      - image: pubnative/android_15
+
+    working_directory: ~/sdk
+
+    environment:
+      TERM: dumb
+      _JAVA_OPTIONS: "-Xmx1400m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
+
+    steps:
+      - checkout
+      - deploy:
+          name: Deploy to Bintray
+          command: |
+              ./gradlew bintrayUpload
