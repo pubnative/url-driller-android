@@ -13,7 +13,7 @@ This repository contains a tool to navigate deep into an URL redirection and ope
 
 Add the following line to your build.gradle file
 
-`compile "net.pubnative:url_driller:1.3.1"`
+`compile "net.pubnative:url_driller:1.3.3"`
 
 ###Manual
 
