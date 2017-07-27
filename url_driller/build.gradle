@@ -21,7 +21,7 @@ task projectInfo << {
     println " === ${project.group}:${project.name}:${project.version} - (${System.getenv("CIRCLE_BUILD_NUM")}) ==="
     println ""
 }
-version = "1.3.2"
+version = "1.3.3"
 group = "net.pubnative"
 def project_name = "url-driller"
 def version_name = version
