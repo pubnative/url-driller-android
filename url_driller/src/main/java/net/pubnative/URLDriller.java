@@ -138,6 +138,7 @@ public class URLDriller {
             if (mUserAgent != null) {
                 conn.setRequestProperty("User-Agent", mUserAgent);
             }
+
             conn.setInstanceFollowRedirects(false);
             conn.connect();
             conn.setReadTimeout(5000);
@@ -180,6 +181,9 @@ public class URLDriller {
         } catch (Exception exception) {
             Log.e(TAG, "Drilling error: " + exception);
             invokeFail(url, exception);
+        } catch (OutOfMemoryError error) {
+            Log.e(TAG, "Drilling OOM error: with URL = [" + url + "]", error);
+            invokeFinish(null);
         }
     }
 
