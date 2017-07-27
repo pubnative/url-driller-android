@@ -180,8 +180,8 @@ public class URLDriller {
         } catch (Exception exception) {
             Log.e(TAG, "Drilling error: " + exception);
             invokeFail(url, exception);
-        } catch (OutOfMemoryError error) {
-            Log.e(TAG, "Drilling OOM error: with URL = [" + url + "]", error);
+        } catch (Error error) {
+            Log.e(TAG, "Drilling error: with URL = [" + url + "]", error);
             invokeFinish(null);
         }
     }
