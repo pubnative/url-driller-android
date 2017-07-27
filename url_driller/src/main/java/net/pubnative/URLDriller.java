@@ -138,7 +138,6 @@ public class URLDriller {
             if (mUserAgent != null) {
                 conn.setRequestProperty("User-Agent", mUserAgent);
             }
-
             conn.setInstanceFollowRedirects(false);
             conn.connect();
             conn.setReadTimeout(5000);
