@@ -180,6 +180,9 @@ public class URLDriller {
         } catch (Exception exception) {
             Log.e(TAG, "Drilling error: " + exception);
             invokeFail(url, exception);
+        } catch (Error error) {
+            Log.e(TAG, "Drilling error: with URL = [" + url + "]", error);
+            invokeFinish(null);
         }
     }
 
