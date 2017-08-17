@@ -179,6 +179,9 @@ public class URLDriller {
                 }
                 break;
             }
+
+            connection.getInputStream().close();
+            connection.getOutputStream().close();
         } catch (Exception exception) {
             Log.e(TAG, "Drilling error: " + exception);
             invokeFail(url, exception);
