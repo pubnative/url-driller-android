@@ -132,16 +132,19 @@ public class URLDriller {
     protected void doDrill(String url, int counter) {
 
         Log.v(TAG, "doDrill: " + url);
+
+        HttpURLConnection connection = null;
+
         try {
             URL urlObj = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
+            connection = (HttpURLConnection) urlObj.openConnection();
             if (mUserAgent != null) {
-                conn.setRequestProperty("User-Agent", mUserAgent);
+                connection.setRequestProperty("User-Agent", mUserAgent);
             }
-            conn.setInstanceFollowRedirects(false);
-            conn.connect();
-            conn.setReadTimeout(5000);
-            int status = conn.getResponseCode();
+            connection.setInstanceFollowRedirects(false);
+            connection.connect();
+            connection.setReadTimeout(5000);
+            int status = connection.getResponseCode();
             Log.v(TAG, " - Status: " + status);
             switch (status) {
                 case HttpURLConnection.HTTP_OK: {
@@ -152,7 +155,7 @@ public class URLDriller {
                 case HttpURLConnection.HTTP_MOVED_TEMP:
                 case HttpURLConnection.HTTP_MOVED_PERM:
                 case HttpURLConnection.HTTP_SEE_OTHER: {
-                    String newUrl = conn.getHeaderField("Location");
+                    String newUrl = connection.getHeaderField("Location");
                     Log.v(TAG, " - Redirecting: " + newUrl);
                     if (newUrl.startsWith("/")) {
                         String protocol = urlObj.getProtocol();
@@ -160,7 +163,6 @@ public class URLDriller {
                         newUrl = protocol + "://" + host + newUrl;
                     }
                     invokeRedirect(newUrl);
-                    conn.disconnect();
                     if (mDrillSize == 0) {
                         doDrill(newUrl);
                     } else if (mDrillSize > 0 && counter < mDrillSize) {
@@ -177,12 +179,19 @@ public class URLDriller {
                 }
                 break;
             }
+
+            connection.getInputStream().close();
+            connection.getOutputStream().close();
         } catch (Exception exception) {
             Log.e(TAG, "Drilling error: " + exception);
             invokeFail(url, exception);
         } catch (Error error) {
             Log.e(TAG, "Drilling error: with URL = [" + url + "]", error);
             invokeFinish(null);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 
